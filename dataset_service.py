@@ -6,8 +6,8 @@ import csv
 import sys
 
 args = sys.argv
-if (len(args) != 3):
-  print("There needs to be two arguments, one for the template csv path, and one for the target path.")
+if (len(args) != 4):
+  print("There needs to be three arguments, one for the template csv path, one for the target path and one for the number of cities")
   sys.exit()
 
 
@@ -57,7 +57,7 @@ def write_to_csv(sentences, path):
          
 
 all_cities = get_cities_from_country("france")
-cities = get_cities_set(all_cities, 50)
+cities = get_cities_set(all_cities, int(args[3]))
 cities_couples = get_couples(cities)
 sentences = fill_sentences(cities_couples, args[1])
 write_to_csv(sentences, args[2])
