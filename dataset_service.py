@@ -2,21 +2,28 @@ import pandas as pd
 import re
 import requests
 import math
+import csv
+import sys
 
-def get_cities(number_of_cities):
+args = sys.argv
+if (len(args) != 3):
+  print("There needs to be two arguments, one for the template csv path, and one for the target path.")
+  sys.exit()
+
+
+def get_cities_set(cities_set, number_of_cities):
   cities = []
-  number_of_cities = 100
-  if number_of_cities > len(response_cities):
-    number_of_cities = len(response_cities)
-  factor = math.ceil(len(response_cities) / number_of_cities)
+  if number_of_cities > len(cities_set):
+    number_of_cities = len(cities_set)
+  factor = math.ceil(len(cities_set) / number_of_cities)
   for i in range(number_of_cities):
     if i != 0:
        number = factor * i
     else:
        number = 0
-    if number > len(response_cities):
+    if number > len(cities_set):
        break
-    cities.append(response_cities[number])
+    cities.append(cities_set[number])
   return cities
 
 def get_couples(cities):
@@ -24,22 +31,40 @@ def get_couples(cities):
   cities_couples = []
   for couple in couple_ids:
     cities_couples.append((cities[couple[0]], cities[couple[1]]))
-    # print(cities[couple[0]], "," , cities[couple[1]])
   return cities_couples
 
-url = "https://countriesnow.space/api/v0.1/countries/cities"
+def get_cities_from_country(country):
+  url = "https://countriesnow.space/api/v0.1/countries/cities"
+  response = requests.request("POST", url, headers={}, data={ "country": country })
+  JSONresponse = response.json()
+  return JSONresponse["data"]
 
-headers = {}
+def fill_sentences(cities_couples, template_path):
+  data = pd.read_csv(template_path, delimiter=",")
+  sentences = []
+  for index, row in data.iterrows():
+    for couple in cities_couples:
+      newSentence = row.SENTENCE.replace("X", couple[0])
+      newSentence = newSentence.replace("Y", couple[1])
+      sentences.append(newSentence)
+  return sentences
 
-response = requests.request("POST", url, headers=headers, data={ "country": "france"})
-JSONresponse = response.json()
-response_cities = JSONresponse["data"]
-cities = get_cities(100)
+def write_to_csv(sentences, path):
+   with open(path, 'w', newline="") as file:
+      writer = csv.writer(file)
+      for sentence in sentences:
+        writer.writerow([sentence])
+         
+
+all_cities = get_cities_from_country("france")
+cities = get_cities_set(all_cities, 50)
 cities_couples = get_couples(cities)
-print(cities_couples)
+sentences = fill_sentences(cities_couples, args[1])
+write_to_csv(sentences, args[2])
+print("done")
 
 
-data = pd.read_csv("./dataset_template.csv", delimiter=",")
+# data = pd.read_csv("./dataset_template.csv", delimiter=",")
 
 
 # AFTER
