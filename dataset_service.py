@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 import requests
 import math
 import csv
@@ -9,7 +8,6 @@ args = sys.argv
 if (len(args) != 4):
   print("There needs to be three arguments, one for the template csv path, one for the target path and one for the number of cities")
   sys.exit()
-
 
 def get_cities_set(cities_set, number_of_cities):
   cities = []
@@ -55,47 +53,9 @@ def write_to_csv(sentences, path):
       for sentence in sentences:
         writer.writerow([sentence])
          
-
 all_cities = get_cities_from_country("france")
 cities = get_cities_set(all_cities, int(args[3]))
 cities_couples = get_couples(cities)
 sentences = fill_sentences(cities_couples, args[1])
 write_to_csv(sentences, args[2])
 print("done")
-
-
-# data = pd.read_csv("./dataset_template.csv", delimiter=",")
-
-
-# AFTER
-def extract_data(text):
-    # Use regular expressions to find all occurrences of <ORIG> and <DEST> tags
-    pattern = r"<(ORIG|DEST)>([^<]+)<\1/>"
-    matches = list(re.finditer(pattern, text))
-
-    # Create a modified version of the text with tags removed
-    modified_text = re.sub(r"<(ORIG|DEST)>([^<]+)<\1/>", r"\2", text)
-
-    # Calculate the new positions based on the modified text
-    entities = []
-    offset = 0
-    for match in matches:
-        tag, value = match.groups()
-        start = match.start(2) - offset
-        end = start + len(value)
-        entities.append((start, end, tag))
-        # Adjust offset by the length of removed tags
-        offset += len(f"<{tag}>") + len(f"<{tag}/>")
-
-    return (modified_text, entities)
-
-# for index, row in data.iterrows():
-#   print(row.SENTENCE)
-#   data = extract_data(row.SENTENCE)
-#   print(data)
-  # Find <ORIG>
-  # Remove, keep id
-  # FIND <ORIG/>
-  # Remove, keep id
-  # Find <DEST>
-  # Remove, keep id
