@@ -5,8 +5,8 @@ from spacy.tokens import DocBin
 import sys
 
 args = sys.argv
-if (len(args) < 2):
-   print("You need to provide the name of the dataset csv file as an argument")
+if (len(args) < 3):
+   print("You need to provide two arguments: the name of the dataset csv file and the target path")
    sys.exit()
 
 # AFTER
@@ -52,9 +52,9 @@ def write_db_to_disk(data):
           ents.append(span)
       doc.ents = ents
       db.add(doc)
-  db.to_disk("./train.spacy")
+  db.to_disk("./data/" + args[2])
 
-path = args[1]
+path = "./data/" + args[1]
 print("Getting formatted array...")
 data = get_formatted_array(path)
 print("Writing DocBin to disk...")

@@ -1,0 +1,14 @@
+SENTENCE
+Quel est l'itinéraire recommandé pour aller de <ORIG>X<ORIG/> à <DEST>Y<DEST/> ?
+Est-ce que <DEST>Y<DEST/> est proche de <ORIG>X<ORIG/> ?
+Quelle est la meilleure route pour aller de <ORIG>X<ORIG/> à <DEST>Y<DEST/> ?
+De <ORIG>X<ORIG/> à <DEST>Y<DEST/> en vélo
+Le trajet de <ORIG>X<ORIG/> à <DEST>Y<DEST/> est-il direct ?
+Se rendre à <DEST>Y<DEST/> depuis <ORIG>X<ORIG/> en transport privé
+Me rendre à <DEST>Y<DEST/> depuis <ORIG>X<ORIG/> en covoiturage
+Rejoindre <DEST>Y<DEST/> à partir de <ORIG>X<ORIG/>
+Aller de <ORIG>X<ORIG/> à <DEST>Y<DEST/> sans passer par l'autoroute
+Le temps de trajet le plus court entre <ORIG>X<ORIG/> et <DEST>Y<DEST/>
+Puis-je rejoindre <DEST>Y<DEST/> depuis <ORIG>X<ORIG/> sans changement ?
+Me rendre de <ORIG>X<ORIG/> à <DEST>Y<DEST/> avec une correspondance
+Puis-je me rendre de <ORIG>X<ORIG/> à <DEST>Y<DEST/> en une journée ?
