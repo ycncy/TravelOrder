@@ -1,18 +1,21 @@
 import speech_recognition as sr
+import spacy
+
+nlp = spacy.load("./output/model-best")
 
 recognizer = sr.Recognizer()
 
-# Use the microphone as the source
 with sr.Microphone() as source:
     print("Speak something in French:")
-    recognizer.adjust_for_ambient_noise(source)  # Adjust to ambient noise
-    audio = recognizer.listen(source)  # Capture the audio
+    recognizer.adjust_for_ambient_noise(source)
+    audio = recognizer.listen(source)
 
-# Recognize the speech using Google Web Speech API
 try:
-    # Specify the language parameter for French ('fr-FR')
     text = recognizer.recognize_google(audio, language='fr-FR')
     print(f"Transcription: {text}")
+    doc = nlp(text)
+    for ent in doc.ents:
+        print(f"{ent.text} - {ent.label_}")
 except sr.UnknownValueError:
     print("Sorry, I could not understand the audio.")
 except sr.RequestError:
