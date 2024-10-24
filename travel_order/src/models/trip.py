@@ -17,3 +17,8 @@ class TripStep(BaseModel):
 class TripResponse(BaseModel):
     total_time: float
     steps: List[TripStep]
+
+
+class TripOptionsResponse(BaseModel):
+    departures: List[str]
+    arrivals: List[str]

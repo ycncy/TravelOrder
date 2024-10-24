@@ -1,9 +1,13 @@
+import os
 from typing import Tuple
 
-import pandas as pd
 import networkx as nx
+import pandas as pd
+import spacy
 
 from src.config.logger import logger
+
+spacy_model = spacy.load(os.path.join(os.path.dirname(__file__), '../../data/spacy/model-best'))
 
 
 def load_connections_data(data_path: str) -> Tuple[nx.DiGraph, pd.DataFrame]:
@@ -17,3 +21,8 @@ def load_connections_data(data_path: str) -> Tuple[nx.DiGraph, pd.DataFrame]:
     logger.info(f"Graph created with {len(G.edges)} edges")
 
     return G, connections
+
+
+G, connections = load_connections_data(
+    os.path.join(os.path.dirname(__file__), '../../data/output/sncf_connections.csv')
+)

@@ -1,14 +1,30 @@
-import os
-
 import networkx as nx
 from networkx import shortest_path, shortest_path_length
 
-from src.models.trip import TripResponse, TripStep
-from src.services.connections_service import load_connections_data
+from src.models.trip import TripResponse, TripStep, TripOptionsResponse
+from src.config.loader import connections
 
-G, connections = load_connections_data(
-    os.path.join(os.path.dirname(__file__), '../../data/output/sncf_connections.csv')
-)
+from src.config.loader import spacy_model
+from src.models.spacy import parse_spacy_result
+
+from src.config.loader import G
+
+
+def find_trip_options(sentence: str) -> TripOptionsResponse:
+    result = spacy_model(sentence)
+
+    result_parsed = parse_spacy_result(result.to_json())
+
+    departures = connections[connections['departure_city'].str.lower().str.contains(result_parsed['departure'].lower())][
+        ['stop_id_start', 'departure_city']].drop_duplicates()["departure_city"].unique().tolist()
+
+    arrivals = connections[connections['arrival_city'].str.lower().str.contains(result_parsed['arrival'].lower())][
+        ['stop_id_end', 'arrival_city']].drop_duplicates()["arrival_city"].unique().tolist()
+
+    return TripOptionsResponse(
+        departures=departures,
+        arrivals=arrivals
+    )
 
 
 def find_shortest_trip(departure_city: str, arrival_city: str) -> TripResponse | None:
