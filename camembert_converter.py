@@ -1,83 +1,90 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, Trainer, TrainingArguments, pipeline
 import re
 
-# Load pre-trained tokenizer and model
-model_name = "Jean-Baptiste/camembert-ner"
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-model = AutoModelForTokenClassification.from_pretrained(model_name)
 
+model_name = "Jean-Baptiste/camembert-ner"
+
+def prepare_tokenizer():
+    # load pre-trained tokenizer and model
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+
+    special_tokens = {
+        "additional_special_tokens": [
+            "<ORIG>", "</ORIG>",
+            "<DEST>", "</DEST>"
+        ]
+    }
+
+    tokenizer.add_special_tokens(special_tokens)
+
+    return tokenizer
+
+
+def extract_and_process_entities(text, tokenizer, nlp):
+    # regex to find all occurrences of <ORIG> and <DEST> tags
+    tag_pattern = r"<(ORIG|DEST)>([^<]+)<\1/>"
+    matches = list(re.finditer(tag_pattern, text))
+
+    # store original tagged entities
+    tagged_entities = []
+    for match in matches: 
+        tag, value = match.groups()
+        tagged_entities.append({
+            'tag': tag,
+            'value': value,
+            'original_text': match.group(0)
+        })
+
+    # remove tag for ner processing
+    clean_text = re.sub(tag_pattern, r"\2", text)
+
+    ner_results = nlp(clean_text)
+
+    print("=================================================")
+    print("Tokenization analysis:")
+
+    for entity in tagged_entities:
+        tokens = tokenizer.tokenize(entity["value"])
+        print("=================================================")
+        print(f"{entity['tag']}: {entity['value']} -> {tokens}")
+
+        # if city name being split, add as special token
+        if len(tokens) > 1:
+            print("=================================================")
+            print(f"Adding {entity['value']} as special token")
+            tokenizer.add_special_tokens({
+                "additional_special_tokens": [entity['value']]
+            })
+            # Verify the new tokenization
+            new_tokens = tokenizer.tokenize(entity['value'])
+            print("=================================================")
+            print(f"New tokenization: {entity['value']} -> {new_tokens}")
+
+    print("=================================================")
+    print("\nTokenization of text without tags:")
+    tokens = tokenizer.tokenize(clean_text)
+    print(tokens)
+
+    return tagged_entities, ner_results
+
+
+# init nlp
+tokenizer = prepare_tokenizer()
+model = AutoModelForTokenClassification.from_pretrained(model_name)
 nlp = pipeline('ner', model=model, tokenizer=tokenizer, aggregation_strategy="simple")
 
-sentence = "Je veux aller de <ORIG>Aast<ORIG/> à <DEST>La Grigonnais<DEST/>"
-sentence2 = "Je veux aller de <ORIG>Aast<ORIG/> à <DEST>Saint-Tropez<DEST/>"
+test_sentences = [
+    "Je veux aller de <ORIG>Aast<ORIG/> à <DEST>Saint-Tropez<DEST/>"
+]
 
-# Extract <ORIG> and <DEST> tags
-def extract_data(text):
-    # Use regular expressions to find all occurrences of <ORIG> and <DEST> tags
-    pattern = r"<(ORIG|DEST)>([^<]+)<\1/>"
-    matches = list(re.finditer(pattern, text))
-
-    # Create a modified version of the text with tags removed
-    modified_text = re.sub(r"<(ORIG|DEST)>([^<]+)<\1/>", r"\2", text)
+for sentence in test_sentences:
+    print(f"\nProcessing: {sentence}")
+    tagged_entities, ner_results = extract_and_process_entities(sentence, tokenizer, nlp)
     
-    # Perform NER on modified text
-    result = nlp(modified_text)
-
-    # NER result from Camembert
-    print("NER from Camembert:")
-    for entity in result:
-        print(f"Entity: {entity['word']}, Label: {entity['entity_group']}, Score: {entity['score']}")
-
-    # Calculate the new positions based on the modified text
-    entities = []
-    offset = 6
-    for match in matches:
-        tag, value = match.groups()
-        start = match.start(2) - offset
-        end = start + len(value)
-        entities.append({'entity_group': tag, 'word': value, 'start': start, 'end': end})
-        # Adjust offset by the length of removed tags
-        offset += len(f"<{tag}>") + len(f"<{tag}/>")
-
-    # Combine NER results and custom tag extraction
-    print("=================================================")
-    print("Combined Results (CamemBERT NER + Custom Tags):")
-    combined_results = result + entities
-    for entity in combined_results:
-        print(f"Entity: {entity['word']}, Label: {entity['entity_group']}")
-
-    return combined_results
-
-
-def merge_subwords(tokens):
-    merged_tokens = []
-    current_word = ""
-    for token in tokens:
-        if token.startswith("▁"):  # New word starts
-            if current_word:
-                merged_tokens.append(current_word)
-            current_word = token[1:]  # Remove the leading '▁'
-        else:
-            current_word += token  # Continue subword
-    if current_word:
-        merged_tokens.append(current_word)  # Append last word
-    return merged_tokens
-
-
-# Extract data
-single_sentence_result = extract_data(sentence)
-
-# Tokenization
-cleaned_sentence = re.sub(r"<(ORIG|DEST)>([^<]+)<\1/>", r"\2", sentence)
-tokens = tokenizer.tokenize(cleaned_sentence)
-print("=================================================")
-print("Tokens:", tokens)
-
-# Join, merge tokens
-merged_tokens = merge_subwords(tokens)
-print("=================================================")
-print("Merged Tokens:", merged_tokens)
-
-# Encode the tokens
-#inputs = tokenizer.encode_plus(merged_tokens, return_tensors="pt", is_split_into_words=True)
-#print("Encoded Input IDs:", inputs['input_ids'])
+    print("\nNER Results:")
+    for entity in ner_results:
+        print(f"Entity: {entity['word']}, Label: {entity['entity_group']}, Score: {entity['score']:.4f}")
+    
+    print("\nTagged Entities:")
+    for entity in tagged_entities:
+        print(f"Tag: {entity['tag']}, Value: {entity['value']}")
