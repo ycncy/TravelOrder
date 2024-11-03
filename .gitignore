@@ -2,3 +2,5 @@ students_project/
 data/
 train.spacy
 output/
+
+.idea/
