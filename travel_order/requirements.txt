@@ -5,3 +5,7 @@ requests==2.32.3
 spacy==3.7.6
 uvicorn==0.32.0
 networkx==3.4.2
+transformers==4.46.2
+datasets==3.1.0
+torch==2.5.1
+sentencepiece==0.2.0

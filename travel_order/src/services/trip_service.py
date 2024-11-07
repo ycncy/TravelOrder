@@ -1,3 +1,5 @@
+from enum import Enum
+
 import networkx as nx
 from networkx import shortest_path, shortest_path_length
 
@@ -5,15 +7,28 @@ from src.models.trip import TripResponse, TripStep, TripOptionsResponse
 from src.config.loader import connections
 
 from src.config.loader import spacy_model
-from src.models.spacy import parse_spacy_result
-
 from src.config.loader import G
 
+from src.config.loader import camembert_ner_pipeline
+from src.services.camembert_service import parse_camembert_result
+from src.services.spacy_service import parse_spacy_result
 
-def find_trip_options(sentence: str) -> TripOptionsResponse:
-    result = spacy_model(sentence)
 
-    result_parsed = parse_spacy_result(result.to_json())
+class AIModels(Enum):
+    CAMEMBERT = "CAMEMBERT"
+    SPACY = "SPACY"
+
+
+def find_trip_options(sentence: str, model: AIModels) -> TripOptionsResponse:
+    result_parsed = {}
+    if model == AIModels.CAMEMBERT:
+        result = camembert_ner_pipeline(sentence)
+
+        result_parsed = parse_camembert_result(result)
+    if model == AIModels.SPACY:
+        result = spacy_model(sentence)
+
+        result_parsed = parse_spacy_result(result.to_json())
 
     departures = connections[connections['departure_city'].str.lower().str.contains(result_parsed['departure'].lower())][
         ['stop_id_start', 'departure_city']].drop_duplicates()["departure_city"].unique().tolist()

@@ -1,14 +1,24 @@
-from src.models.trip import TripResponse
-from src.services.trip_service import find_shortest_trip
-
-from src.config.loader import spacy_model
-
-from src.models.spacy import parse_spacy_result
+from fastapi import HTTPException
 
 
-def get_origin_and_destination(sentence: str) -> TripResponse:
-    result = spacy_model(sentence)
+def parse_spacy_result(spacy_json) -> dict:
+    sentence_text = spacy_json["text"]
 
-    result_parsed = parse_spacy_result(result.to_json())
+    departure = None
+    arrival = None
 
-    return find_shortest_trip(result_parsed["departure"], result_parsed["arrival"])
+    for ent in spacy_json["ents"]:
+        entity_text = sentence_text[ent["start"]:ent["end"]]
+        if ent["label"] == "ORIG":
+            departure = entity_text
+        elif ent["label"] == "DEST":
+            arrival = entity_text
+
+    if not departure or not arrival:
+        raise HTTPException(status_code=400, detail="Origin or destination is missing")
+
+    return {
+        "sentence": sentence_text,
+        "departure": departure,
+        "arrival": arrival
+    }

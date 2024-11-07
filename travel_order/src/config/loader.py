@@ -6,8 +6,15 @@ import pandas as pd
 import spacy
 
 from src.config.logger import logger
+from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 
 spacy_model = spacy.load(os.path.join(os.path.dirname(__file__), '../../data/spacy/model-best'))
+
+camembert_model_path = os.path.join(os.path.dirname(__file__), '../../data/camembert/trained_model')
+tokenizer = AutoTokenizer.from_pretrained(camembert_model_path)
+model = AutoModelForTokenClassification.from_pretrained(camembert_model_path)
+
+camembert_ner_pipeline = pipeline("ner", model=model, tokenizer=tokenizer, aggregation_strategy="simple")
 
 
 def load_connections_data(data_path: str) -> Tuple[nx.DiGraph, pd.DataFrame]:
