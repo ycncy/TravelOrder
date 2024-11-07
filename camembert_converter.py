@@ -73,7 +73,6 @@ def preprocess_sentences(sentences):
         
         # Initialize character-level BIO labels (O = outside entity, B/I = beginning/inside entity)
         char_labels = ['O'] * len(clean_text)
-        
         sentence_entities = []
         offset = 0 # Track position to avoid overlapping matches
 
@@ -85,14 +84,13 @@ def preprocess_sentences(sentences):
             tag, value = match.groups()
             start = clean_text.find(value, offset)
             end = start + len(value)
+
+            label_prefix = "B-" + tag if tag == "ORIG" else "B-DEST"
+            inside_label = "I-" + tag if tag == "ORIG" else "I-DEST"
             
-            # Apply BIO scheme at character level
             for i in range(start, end):
-                if i == start:
-                    char_labels[i] = 'B-LOC' # Beginning of a location entity
-                else:
-                    char_labels[i] = 'I-LOC' # Inside a location entity
-            
+                char_labels[i] = label_prefix if i == start else inside_label
+
             # Append entity info to sentence_entities
             # Each entity is stored with its text, start and end positions, and type (either ORIG or DEST)
             sentence_entities.append({
@@ -177,14 +175,14 @@ def tokenize_and_align_labels(sentences, entities, tokenizer):
             token_chars = entity_info['char_labels'][token_start:token_end]
             
             # Determine token label based on character labels
-            # 'B-LOC' (beginning of a location entity) → label 1
-            # 'I-LOC' (inside a location entity) → label 2
-            # Outside any entity ('O') → label 0
-            # If a token contains a mix of B-LOC and I-LOC characters, the label B-LOC takes priority
-            if 'B-LOC' in token_chars:
+            if "B-ORIG" in token_chars:
                 label_ids.append(1)
-            elif 'I-LOC' in token_chars:
+            elif 'I-ORIG' in token_chars:
                 label_ids.append(2)
+            elif 'B-DEST' in token_chars:
+                label_ids.append(3)
+            elif 'I-DEST' in token_chars:
+                label_ids.append(4)
             else:
                 label_ids.append(0)
         
@@ -218,9 +216,9 @@ def main():
 
     # Get the original model's label structure
     original_model = AutoModelForTokenClassification.from_pretrained(model_name)
-    num_labels = original_model.num_labels
-    id2label = original_model.config.id2label
-    label2id = original_model.config.label2id
+    num_labels = 5 # Adjusted for "O", "B-ORIG", "I-ORIG", "B-DEST", "I-DEST"
+    id2label = {0: "O", 1: "B-ORIG", 2: "I-ORIG", 3: "B-DEST", 4: "I-DEST"}
+    label2id = {v: k for k, v in id2label.items()}
 
     # Initialize model with the original label structure
     model = AutoModelForTokenClassification.from_pretrained(
