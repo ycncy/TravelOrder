@@ -1,1 +1,8 @@
+students_project/
+data/
+train.spacy
+output/
+
+.idea/
+
 T-AIA-901_project.pdf
