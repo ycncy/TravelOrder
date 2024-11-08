@@ -8,9 +8,9 @@ import spacy
 from src.config.logger import logger
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 
-spacy_model = spacy.load(os.path.join(os.path.dirname(__file__), '../../data/spacy/model-best'))
+spacy_model = spacy.load(os.path.join(os.path.dirname(__file__), '../../models/spacy/model-best'))
 
-camembert_model_path = os.path.join(os.path.dirname(__file__), '../../data/camembert/trained_model')
+camembert_model_path = os.path.join(os.path.dirname(__file__), '../../models/camembert/trained_model')
 tokenizer = AutoTokenizer.from_pretrained(camembert_model_path)
 model = AutoModelForTokenClassification.from_pretrained(camembert_model_path)
 

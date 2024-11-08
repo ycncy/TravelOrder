@@ -6,3 +6,6 @@ output/
 .idea/
 
 T-AIA-901_project.pdf
+
+travel_order/models/camembert/trained_model
+travel_order/models/spacy/model-best
