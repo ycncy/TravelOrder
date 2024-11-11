@@ -21,15 +21,17 @@
         v-model="arrivalCity"
         placeholder="Arrival"
       />
-      <Button @click="handleFetchTrip" class="w-20">Find</Button>
+
+      <div class="flex gap-2">
+        <Button @click="handleFetchTrip" class="w-20">Find</Button>
+        <Button @click="clearInputAndResult" class="w-20" variant="outline">Clear</Button>
+      </div>
     </div>
 
     <div v-if="shortestTrip">
       <TripResultTable :trip="shortestTrip" />
-      <h3>Result:</h3>
-      <pre>{{ shortestTrip }}</pre>
     </div>
-    <p v-else-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
+    <!-- <p v-else-if="errorMessage" class="text-red-500">{{ errorMessage }}</p> -->
     <p v-else>Enter departure and arrival cities to find the shortest trip.</p>
   </div>
 </template>
@@ -37,12 +39,28 @@
 <script setup lang="ts">
 import { useTrip } from '#build/imports';
 import BackButton from '~/components/BackButton.vue';
+import { toast } from '@/components/ui/toast/use-toast';
 
 const { fetchShortestTrip, shortestTrip, errorMessage } = useTrip();
 const departureCity = ref('');
 const arrivalCity = ref('');
 
 const handleFetchTrip = () => {
+  if (!departureCity.value || !arrivalCity.value) { 
+    errorMessage.value = "Please provide both departure and arrival cities.";
+    toast({
+      title: 'Uh oh! Something went wrong.',
+      description: errorMessage.value,
+      variant: 'destructive',
+    })
+  }
   fetchShortestTrip(departureCity.value, arrivalCity.value);
+}
+
+const clearInputAndResult = () => {
+  departureCity.value = '';
+  arrivalCity.value = '';
+  shortestTrip.value = null;
+  errorMessage.value = '';
 }
 </script>
