@@ -1,4 +1,6 @@
 <template>
+  <h3 class="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">Total travel time: {{ trip.total_time }}</h3>
+
   <Table>
     <TableCaption>Steps</TableCaption>
     <TableHeader>
@@ -21,7 +23,6 @@
     </TableBody>
   </Table>
 
-  <h3 class="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">Total travel time: {{ trip.total_time }}</h3>
 </template>
 
 <script setup lang="ts">

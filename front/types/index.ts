@@ -24,4 +24,4 @@ export interface TripOptionsResponse {
 }
 
 // AI Model types for getTripOptions API
-export type AIModels = 'SPACY' | 'CAMEMBERT'; 
+export type AIModels = 'SPACY' | 'CAMEMBERT';

@@ -27,6 +27,8 @@
         <pre>{{ tripOptions }}</pre>
       </div>
       <p v-else>Enter a sentence describing your trip and the model you want to use</p>
+      
+      <Form :tripOptions="tripOptions"/>
     </div>
   </div>
 </template>

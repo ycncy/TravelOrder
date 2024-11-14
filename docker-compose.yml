@@ -2,7 +2,9 @@ version: '3.9'
 
 services:
   travel-order-api:
-    build: ./travel_order
+    build:
+      context: .
+      dockerfile: travel_order/Dockerfile
     command: uvicorn main_api:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"

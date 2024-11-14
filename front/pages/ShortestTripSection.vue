@@ -31,7 +31,6 @@
     <div v-if="shortestTrip">
       <TripResultTable :trip="shortestTrip" />
     </div>
-    <!-- <p v-else-if="errorMessage" class="text-red-500">{{ errorMessage }}</p> -->
     <p v-else>Enter departure and arrival cities to find the shortest trip.</p>
   </div>
 </template>
