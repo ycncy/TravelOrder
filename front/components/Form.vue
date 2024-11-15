@@ -1,21 +1,18 @@
 <template>
     <div v-if="tripOptions">
-        <div v-if="tripOptions.departures.length > 1 || tripOptions.arrivals.length > 1" class="flex items-center space-x-4">
-            <p class="text-sm text-muted-foreground">Departure</p>
-            <DepartureArrival :options="tripOptions.departures"/>
-
-            <p class="text-sm text-muted-foreground">Arrival</p>
-            <DepartureArrival :options="tripOptions.arrivals"/>
-        </div>
-        <div v-else class="flex items-center space-x-4">
-            <p class="text-sm text-muted-foreground">Departure</p>
-            <Badge> {{ tripOptions.departures[0] }}</Badge>
-
-            <p class="text-sm text-muted-foreground">Arrival</p>
-            <Badge>{{ tripOptions.arrivals[0] }}</Badge>
+        <div class="flex items-center space-x-4">
+            <template v-for="(options, label) in displayOptions" :key="label">
+                <p class="text-sm text-muted-foreground">{{ label }}</p>
+                <template v-if="options.length > 1">
+                    <DepartureArrival :options="options" />
+                </template>
+                <template v-else>
+                    <Badge>{{ options[0] }}</Badge>
+                </template>
+            </template>
         </div>
 
-        <Button>Save</Button>
+        <!-- <Button>Save</Button> -->
     </div>
 </template>
 
@@ -30,4 +27,9 @@ const props = defineProps({
         required: true,
     },
 });
+
+const displayOptions = computed(() => ({
+    Departure: props.tripOptions.departures || [],
+    Arrival: props.tripOptions.arrivals || []
+}));
 </script>
