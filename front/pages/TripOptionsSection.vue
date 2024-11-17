@@ -19,16 +19,12 @@
 
       <div class="flex gap-2">
         <Button @click="handleFetchTripOptions" class="w-40">Get Trip Options</Button>
-        <Button @click="clearInputAndResult" class="w-20" variant="outline">Clear</Button>
       </div>
 
-      <div v-if="tripOptions">
-        <h3>Result:</h3>
-        <pre>{{ tripOptions }}</pre>
-      </div>
+      <Form v-if="tripOptions" :tripOptions="tripOptions"/>
       <p v-else>Enter a sentence describing your trip and the model you want to use</p>
-      
-      <Form :tripOptions="tripOptions"/>
+
+      <ClearButton :visible="fieldsNotFilled" :onClear="clearInputAndResult"></ClearButton>
     </div>
   </div>
 </template>
@@ -43,8 +39,10 @@ const { fetchTripOptions, tripOptions, errorMessage } = useTrip();
 const sentence = ref('');
 const selectedModel = ref('');
 
+const fieldsNotFilled = computed(() => !!(sentence.value || selectedModel.value || tripOptions.value));
+
 const handleFetchTripOptions = () => {
-  if (!sentence.value || !selectedModel.value) {
+  if (!fieldsNotFilled) {
     errorMessage.value = 'Please provide a sentence and select a model.';
     toast({
       title: 'Uh oh! Something went wrong.',
@@ -60,5 +58,6 @@ const clearInputAndResult = () => {
   sentence.value = '';
   selectedModel.value = '';
   errorMessage.value = '';
+  tripOptions.value = null;
 }
 </script>

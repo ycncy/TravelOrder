@@ -50,8 +50,11 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['update:selected']);
+
 function selectOption(option: string) {
   selectedCity.value = { value: option, label: option };
+  emit('update:selected', option);
   open.value = false;
 }
 </script>

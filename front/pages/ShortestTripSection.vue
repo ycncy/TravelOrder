@@ -24,7 +24,7 @@
 
       <div class="flex gap-2">
         <Button @click="handleFetchTrip" class="w-20">Find</Button>
-        <Button @click="clearInputAndResult" class="w-20" variant="outline">Clear</Button>
+        <ClearButton :visible="fieldsNotFilled" :onClear="clearInputAndResult"></ClearButton>
       </div>
     </div>
 
@@ -39,13 +39,16 @@
 import { useTrip } from '#build/imports';
 import BackButton from '~/components/BackButton.vue';
 import { toast } from '@/components/ui/toast/use-toast';
+import ClearButton from '~/components/ClearButton.vue';
 
 const { fetchShortestTrip, shortestTrip, errorMessage } = useTrip();
 const departureCity = ref('');
 const arrivalCity = ref('');
 
+const fieldsNotFilled = computed(() => !!(departureCity.value || arrivalCity.value));
+
 const handleFetchTrip = () => {
-  if (!departureCity.value || !arrivalCity.value) { 
+  if (!fieldsNotFilled) { 
     errorMessage.value = "Please provide both departure and arrival cities.";
     toast({
       title: 'Uh oh! Something went wrong.',
