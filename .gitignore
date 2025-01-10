@@ -4,6 +4,7 @@ train.spacy
 output/
 models/
 .idea/
+.ropeproject/
 
 T-AIA-901_project.pdf
 

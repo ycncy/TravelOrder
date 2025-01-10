@@ -23,5 +23,8 @@
     "tailwindcss-animate": "^1.0.7",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@types/dom-speech-recognition": "^0.0.4"
   }
 }
