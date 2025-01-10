@@ -65,7 +65,6 @@ async function updateRoute() {
         .addTo(map);
     markers.push(departureMarker);
 
-    // **Add marker only for the last arrival**
     const arrivalMarker = L.marker(lastArrivalCoords)
         .bindPopup(`<b>${lastStep.arrival_city}</b><br>${lastStep.arrival_station}<br>Final Destination`)
         .addTo(map);
