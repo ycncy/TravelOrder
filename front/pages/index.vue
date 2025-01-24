@@ -8,16 +8,22 @@
       This is a simple client for our project in which contains 2 API calls to showcase our model training process.
     </p>
 
-    <div class="flex-row mt-6">
-      <Button class="w-30 mr-3">
+    <div class="flex flex-row mt-6 gap-3">
+      <Button class="w-30">
         <NuxtLink to="/ShortestTripSection">Shortest trip</NuxtLink>
       </Button>
 
       <Button>
         <NuxtLink class="w-30" to="/TripOptionsSection">Trip options</NuxtLink>
       </Button>
+
+      <Button>
+        <NuxtLink class="w-30" to="/Maps">Maps</NuxtLink>
+      </Button>
     </div>
 
     <NuxtPage/>
   </div>
 </template>
+<script setup lang="ts">
+</script>
