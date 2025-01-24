@@ -1,0 +1,13 @@
+Evaluation Metrics:
+              precision    recall  f1-score   support
+
+        DEST       0.87      0.87      0.87       260
+        ORIG       0.87      0.87      0.87       260
+
+    accuracy                           0.87       520
+   macro avg       0.87      0.87      0.87       520
+weighted avg       0.87      0.87      0.87       520
+
+Precision: 0.8692
+Recall: 0.8692
+F1-Score: 0.8692
